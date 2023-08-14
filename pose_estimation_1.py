@@ -37,7 +37,10 @@ class FallDetector:
         
 
 
-        self.capture = cv.VideoCapture("http://203.252.161.105:8000/stream.mjpg")
+        # self.capture = cv.VideoCapture("http://203.252.161.105:8000/stream.mjpg")
+        # self.capture = cv.VideoCapture("http://localhost:8000/stream.mjpg")
+        self.capture = cv.VideoCapture("/home/woo4826/Desktop/proj_makers/output.mp4")
+
     
     def rescaleFrame(self): 
 
@@ -118,6 +121,7 @@ class FallDetector:
             #Action checker
             if self.toBeChecked and not self.stationary:
                 self.status = "Warning!"
+                #fall detected
                 color = orange
                     
             elif not self.toBeChecked and self.stationary:
@@ -156,7 +160,8 @@ class FallDetector:
 
         if self.alertMsgFlag == False: 
             print('Fall is detected')
-            dt = self.datetime.strftime("%d%m%Y%H%M%S")
+            #dt = self.datetime.strftime("%d%m%Y%H%M%S")
+            dt = "11082023174922"
             name = dt +'.jpg'
             p = os.path.sep.join(['shots', "Fallshot_{}.png".format(str(dt))])
             cv.imwrite(p,self.frame)
@@ -165,7 +170,18 @@ class FallDetector:
             self.alertMsgFlag = True
             self.isFall = False
             self.toBeChecked = False
-
+            url = "http://localhost:3000/fall-detection"  # API 엔드포인트 주소
+            payload = {
+                "deviceId": "your_device_id",
+                "imageCapture": True
+            }
+            
+            response = requests.post(url, json=payload)
+            if response.status_code == 200:
+                print("Fall detection check completed.")
+            else:
+                print("Error:", response.text)
+            
     def __getDateTime(self):
 
         """Get date and time"""
